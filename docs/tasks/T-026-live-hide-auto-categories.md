@@ -14,13 +14,14 @@ User feedback (16 Nov 2026): in Live TV the automatic categories crowd out the p
 
 ## Change
 
-- `General.kt`: new setting `liveGenres`, preference key `live_genres` in `ipvio_general`, default `true` (existing behaviour kept).
+- `General.kt`: new setting `liveGenres`, preference key `live_genres` in `ipvio_general`, default `false` (decision of the fork owner, 16 Nov 2026: the provider categories show without visiting the settings; visible change for existing users).
 - `LiveGenre.kt`: new pure function `shown(live, on)`.
-- `LiveTab.kt`: genre categories come from `LiveGenre.shown(live, General.liveGenres)`.
+- `LiveTab.kt`: genre categories come from `LiveGenre.shown(live, General.liveGenres)`; a remembered genre category falls back to the Live TV home page when the switch is off. With the switch off the Live TV home page shows one row per provider category (`LiveGenre.providerRows`: column order, no hidden and no adult categories) instead of the genre rows.
+- `HomeScreen.kt`: the genre prewarm is skipped while the switch is off.
 - `SettingsHub.kt`: toggle "Automatische Kategorien" on the Live TV settings page.
 - `SettingsResetLogic.kt`: the Live TV page reset also resets `live_genres`.
 - `DictJ.kt`, `DictNl5.kt`: translations of the two new UI strings.
-- `LiveGenreTest.kt`: three tests.
+- `LiveGenreTest.kt`: five tests.
 
 ## Not changed
 
@@ -28,19 +29,19 @@ Genre detection itself, `HiddenCats`, `CatOrder`, the home screen, movies and se
 
 ## Acceptance criteria
 
-1. Default: Live TV looks as before.
-2. Settings > Live TV > "Automatische Kategorien" off: Sport, Filme, Dokumentationen, Kinder, Nachrichten and Musik
+1. Default (switch off): Sport, Filme, Dokumentationen, Kinder, Nachrichten and Musik
    disappear from the Live TV category column; the provider categories follow "Alle Sender" in provider order.
-3. Switch on again: the genre categories return.
-4. Live TV page reset turns the switch back on.
+2. Switch on: the genre categories return, Live TV looks as before this task.
+3. Live TV page reset turns the switch off again.
+4. Switch off while a genre category was the last opened one: Live TV opens on its home page, not on an empty list.
 
 ## Test results
 
-Not run: no Android SDK in the assistant's environment. `LiveGenreTest` must run in CI or Android Studio.
+`./gradlew testDebugUnitTest assembleDebug` run by the assistant on 16 Nov 2026: build successful, all unit tests green (including `LiveGenreTest`). Not tested on a device.
 
 ## Manual test steps
 
-Steps 1 to 4 above on a Fire TV or Android TV with an M3U playlist.
+Criteria 1 to 4 above on a Fire TV or Android TV with an M3U playlist.
 
 ## Status
 

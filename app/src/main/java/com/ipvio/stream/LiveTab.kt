@@ -441,7 +441,13 @@ fun LiveTab(liveAll: List<Item>, groupsAll: Map<String, List<Item>>, favsAll: Li
             }
             // With no live channels at all the plain list shows the hint instead of an empty home
             if (sel == "HOME" && live.isNotEmpty()) Box(Modifier.weight(2f).fillMaxHeight().padding(end = 24.dp)) {
-                LiveHome(live, genres.filterKeys { it !in HiddenCats.list }, favs, firstChan, onOpen = { ch, l -> ZapContext.list = l; ZapContext.key = "ALL"; onOpen(ch) })
+                // T-026: with the genre categories off, the home rows are the provider's categories in the order of the category column
+                val hiddenNow = HiddenCats.list.toSet()
+                val homeRows = if (genresOn) genres.filterKeys { it !in hiddenNow }
+                    else remember(groups, favCats, hiddenNow, CatOrder.version) {
+                        LiveGenre.providerRows(favCats + CatOrder.sorted(CatOrder.LIVE, groups.keys.toList()), hiddenNow, groups)
+                    }
+                LiveHome(live, homeRows, favs, firstChan, onOpen = { ch, l -> ZapContext.list = l; ZapContext.key = "ALL"; onOpen(ch) })
             } else {
             Column(Modifier.weight(0.9f).fillMaxHeight().padding(end = 24.dp)) {
                 // Own list: rename and delete clearly visible above the channels (before only via long OK on the list)
@@ -771,7 +777,8 @@ private fun LiveHome(live: List<Item>, genres: Map<String, List<Item>>, favs: Li
     for ((k, l) in genres) rows.add((LiveGenre.byKey(k)?.label ?: k) to l.take(40))
     if (rows.isEmpty()) rows.add("Alle Sender" to live.take(40))
     LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 48.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        itemsIndexed(rows, key = { _, r -> r.first }) { ri, r ->
+        // Index in the key: a provider category may carry the same name as a fixed row (T-026)
+        itemsIndexed(rows, key = { i, r -> "$i|" + r.first }) { ri, r ->
             Column {
                 Text(r.first, color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 8.dp, top = 12.dp))
                 androidx.compose.foundation.lazy.LazyRow(

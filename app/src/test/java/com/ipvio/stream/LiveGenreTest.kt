@@ -24,6 +24,19 @@ class LiveGenreTest {
         assertEquals(listOf("2"), g["GEN:news"]?.map { it.id })
     }
 
+    @Test fun providerRows_keepOrderAndSkipHiddenAndRepeats() {
+        val groups = live.groupBy { it.group }
+        val names = groups.keys.toList()
+        val rows = LiveGenre.providerRows(listOf(names[2]) + names + listOf("gone"), setOf(names[1]), groups)
+        assertEquals(listOf(names[2], names[0]), rows.keys.toList())
+        assertEquals(listOf("3"), rows[names[2]]?.map { it.id })
+    }
+
+    @Test fun providerRows_leaveOutAdultCategories() {
+        val groups = (live + ch("9", "XXX 1", "FR XXX ADULTES")).groupBy { it.group }
+        assertEquals(3, LiveGenre.providerRows(groups.keys.toList(), emptySet(), groups).size)
+    }
+
     @Test fun reset_liveTabClearsGenreSwitch() {
         assertTrue("live_genres" in SettingsResetLogic.generalKeys(SettingsResetLogic.LIVE))
     }

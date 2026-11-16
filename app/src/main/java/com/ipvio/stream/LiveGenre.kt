@@ -28,6 +28,13 @@ object LiveGenre {
     /** Genre categories for Live TV: none when the user switched them off (T-026), so the provider's own categories follow "All channels". */
     fun shown(live: List<Item>, on: Boolean): Map<String, List<Item>> = if (on) split(live) else emptyMap()
 
+    /** Rows of the Live TV home page when the genre categories are off: provider categories in [order], without [hidden] ones, adult categories and repeats. */
+    fun providerRows(order: List<String>, hidden: Set<String>, groups: Map<String, List<Item>>): Map<String, List<Item>> {
+        val out = LinkedHashMap<String, List<Item>>()
+        for (n in order) if (n !in hidden && n !in out && !ParentalLogic.isAdult(n, "")) groups[n]?.let { out[n] = it }
+        return out
+    }
+
     /** Channels per genre; empty genres are missing. */
     fun split(live: List<Item>): LinkedHashMap<String, List<Item>> {
         // The same list is asked again and again (every recomposition, every tab): remember the last result

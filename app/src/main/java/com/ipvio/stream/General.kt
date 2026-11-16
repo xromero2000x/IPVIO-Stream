@@ -29,7 +29,7 @@ object General {
     /** Live TV: show the quality variants of one channel (8K/4K/FHD/HD/SD) as a single row. */
     var bundleLive by mutableStateOf(true)
     /** T-026: Live TV shows the automatic genre categories (Sport, Filme, Dokumentationen, Kinder, Nachrichten, Musik). */
-    var liveGenres by mutableStateOf(true)
+    var liveGenres by mutableStateOf(false)
     /** Live TV channel row size: 0 = small, 1 = normal (default), 2 = large. */
     var channelRowSize by mutableIntStateOf(1)
     /** Playlist refresh: 0 = at every start, 1 = every X hours, 2 = daily, 3 = weekly, 4 = by hand only */
@@ -128,7 +128,7 @@ object General {
         confirmExit = p.getBoolean("confirm_exit", true)
         vodCats = p.getBoolean("vod_cats", false)
         bundleLive = p.getBoolean("bundle_live", true)
-        liveGenres = p.getBoolean("live_genres", true)
+        liveGenres = p.getBoolean("live_genres", false)
         channelRowSize = p.getInt("channel_row_size", 1).coerceIn(0, 2)
         // Users who never chose a mode get "daily": the first start still loads the list once (lastRefresh = 0),
         // later starts use the cache. Before 1.4 the default was "at every start", which re-downloaded the whole line each time.
