@@ -468,6 +468,8 @@ SportsHub¦Sports Hub
 Sports Hub öffnen¦Sports Hub openen
 Sender-Qualitäten bündeln¦Zenderkwaliteiten bundelen
 Derselbe Sender in 8K, 4K, FHD, HD und SD erscheint als eine Zeile. OK startet die beste Qualität, die anderen wählst du im Menü des Senders (OK gedrückt halten).¦Dezelfde zender in 8K, 4K, FHD, HD en SD verschijnt als één rij. OK start de beste kwaliteit; kies de andere in het zendermenu (houd OK ingedrukt).
+Automatische Kategorien¦Automatische categorieën
+Zeigt in Live-TV die von der App erkannten Kategorien Sport, Filme, Dokumentationen, Kinder, Nachrichten und Musik. Aus: nur die Kategorien deines Anbieters.¦Toont in Live-tv de categorieën die de app herkent: Sport, Films, Documentaires, Kinderen, Nieuws en Muziek. Uit: alleen de categorieën van je provider.
 Qualität¦Kwaliteit
 Sprache¦Taal
 Ohne Kennung¦Zonder label

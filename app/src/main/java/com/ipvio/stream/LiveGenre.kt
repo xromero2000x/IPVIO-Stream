@@ -25,6 +25,9 @@ object LiveGenre {
     fun matches(g: Genre, i: Item): Boolean =
         if (g.re == null) SportLogic.isSportChannel(i) else g.re.containsMatchIn(i.group) || g.re.containsMatchIn(i.title)
 
+    /** Genre categories for Live TV: none when the user switched them off (T-026), so the provider's own categories follow "All channels". */
+    fun shown(live: List<Item>, on: Boolean): Map<String, List<Item>> = if (on) split(live) else emptyMap()
+
     /** Channels per genre; empty genres are missing. */
     fun split(live: List<Item>): LinkedHashMap<String, List<Item>> {
         // The same list is asked again and again (every recomposition, every tab): remember the last result

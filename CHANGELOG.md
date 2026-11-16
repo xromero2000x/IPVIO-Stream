@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Live TV: new switch Settings > Live TV > "Automatische Kategorien" (on by default). Off hides the six detected genre categories (Sport, Filme, Dokumentationen, Kinder, Nachrichten, Musik), so the provider's own categories follow "All channels" directly (T-026)
 
 ## 1.4.3 (versionCode 9)
 - Live sync (Google Drive): favorites and history follow your devices automatically. Switch it on in Settings > Storage > Google Drive on each device; it is off by default. Upload a few seconds after a change, download when the app is in front (about every minute). Merged on the device, a safety copy is kept before each merge. Not device tested yet
