@@ -121,6 +121,8 @@ fun LiveTab(liveAll: List<Item>, groupsAll: Map<String, List<Item>>, favsAll: Li
     // The tab opens on "Start" (home), except when coming back from a stream: then the last category with its channel list.
     // LastFocus.pending is set exactly in that case (MainActivity, back from the player).
     var sel by remember { mutableStateOf(if (LastFocus.pending != null) LiveMemory.sel(ctx) ?: "HOME" else "HOME") }
+    // T-026: a remembered genre category no longer exists once the genre categories are switched off
+    if (!genresOn && LiveGenre.isGenreKey(sel)) sel = "HOME"
     HiddenCats.init(ctx)
     CatOrder.init(ctx)
     // Channel name search ("SEARCH" entry): text is kept while the tab is open
