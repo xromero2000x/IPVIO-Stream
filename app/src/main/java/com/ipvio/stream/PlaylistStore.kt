@@ -706,7 +706,10 @@ object PlaylistStore {
         val raw = rawFile(c, u)
         val info = infoFile(c, u)
         val part = partFile(c, u)
-        val pi = LoadLogic.PartInfo.decode(runCatching { info.readText() }.getOrNull())?.takeIf { it.urlHash == key(u) }
+        // T-027: a get.php list is requested with type=m3u_plus (categories). The stored hash is that of the requested
+        // address, so a copy downloaded earlier as type=m3u is not reused or resumed.
+        val fetch = XtreamLogic.plusUrl(u)
+        val pi = LoadLogic.PartInfo.decode(runCatching { info.readText() }.getOrNull())?.takeIf { it.urlHash == key(fetch) }
         if (pi != null && raw.exists() && raw.length() > 0 && System.currentTimeMillis() - raw.lastModified() < RAW_MAX_AGE) {
             return raw to charsetOf(pi.charset)
         }
@@ -716,7 +719,7 @@ object PlaylistStore {
         if (offset > 0) { offset = maxOf(0L, offset - 65_536); RandomAccessFile(part, "rw").use { it.setLength(offset) } }
         val extra = if (pi != null) LoadLogic.resumeHeaders(offset, pi.etag, pi.lastModified) else emptyMap()
         if (extra.isEmpty()) offset = 0L
-        val rb = Request.Builder().url(u).header("User-Agent", UA)
+        val rb = Request.Builder().url(fetch).header("User-Agent", UA)
         extra.forEach { (k, v) -> rb.header(k, v) }
         phase = if (offset > 0) "Download wird fortgesetzt …" else "Verbindung zum Server wird aufgebaut …"
         bytesRead = offset; totalBytes = -1L; downloadDone = false
@@ -743,7 +746,7 @@ object PlaylistStore {
                 totalBytes = total
                 if (len > 0 && c.filesDir.usableSpace < len + SPACE_RESERVE) throw PlaylistError(PlaylistLogic.NO_SPACE)
                 val cs = body.contentType()?.charset(Charsets.UTF_8) ?: Charsets.UTF_8
-                info.writeText(LoadLogic.PartInfo(key(u), r.header("ETag"), r.header("Last-Modified"), cs.name()).encode())
+                info.writeText(LoadLogic.PartInfo(key(fetch), r.header("ETag"), r.header("Last-Modified"), cs.name()).encode())
                 phase = if (append) "Download wird fortgesetzt …" else "Playlist wird heruntergeladen …"
                 FileOutputStream(part, append).use { fo ->
                     val out = BufferedOutputStream(fo, 1 shl 16)

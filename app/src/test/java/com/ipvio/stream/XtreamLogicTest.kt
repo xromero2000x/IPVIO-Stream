@@ -82,4 +82,27 @@ class XtreamLogicTest {
         assertTrue(XtreamLogic.looksLikeM3u("﻿#EXTM3U x"))
         assertFalse(XtreamLogic.looksLikeM3u("<html>884</html>"))
     }
+
+    // T-027
+    @Test fun plusUrl_turnsPlainM3uIntoM3uPlus() {
+        assertEquals("http://h:8080/get.php?username=u&password=p&type=m3u_plus&output=ts",
+            XtreamLogic.plusUrl("http://h:8080/get.php?username=u&password=p&type=m3u&output=ts"))
+        assertEquals("http://h/get.php?username=u&password=p&TYPE=m3u_plus",
+            XtreamLogic.plusUrl("http://h/get.php?username=u&password=p&TYPE=M3U"))
+    }
+
+    @Test fun plusUrl_addsMissingType() {
+        assertEquals("http://h/get.php?username=u&password=p&type=m3u_plus", XtreamLogic.plusUrl("http://h/get.php?username=u&password=p"))
+    }
+
+    @Test fun plusUrl_leavesOtherAddressesAlone() {
+        for (u in listOf(
+            "http://h/get.php?username=u&password=p&type=m3u_plus&output=ts",
+            "http://h/get.php?username=u&password=p&type=m3u8",
+            "http://h/list.m3u?type=m3u",
+            "http://h/player_api.php?username=u&password=p",
+            "http://h/get.php?password=p&type=m3u",
+            "file:///data/list.m3u"
+        )) assertEquals(u, XtreamLogic.plusUrl(u))
+    }
 }

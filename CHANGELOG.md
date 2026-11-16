@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Playlists: a get.php address with `type=m3u` (or without a type) is downloaded as `type=m3u_plus`. The plain type has no categories, so all channels landed in "Sonstige" and movies and series lost their categories too. The saved address is not changed; refresh the playlist once to get the categories (T-027)
 - Live TV: new switch Settings > Live TV > "Automatische Kategorien" (off by default). Off hides the six detected genre categories (Sport, Filme, Dokumentationen, Kinder, Nachrichten, Musik), so the provider's own categories follow "All channels" directly (T-026)
 
 ## 1.4.3 (versionCode 9)

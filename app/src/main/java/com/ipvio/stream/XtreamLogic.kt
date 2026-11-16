@@ -36,6 +36,27 @@ object XtreamLogic {
         return Acct(m.groupValues[1].trimEnd('/'), u, pw)
     }
 
+    private val GET_LIST = Regex("""^(https?://[^?#]+?/get\.php\?)([^#]*)(#.*)?$""", RegexOption.IGNORE_CASE)
+
+    /**
+     * Address to download for a get.php list (T-027). `type=m3u` delivers the entries without `group-title`, so every channel
+     * ended up in "Sonstige"; `type=m3u_plus` carries the provider's categories, logos and EPG ids. A plain `type=m3u` or a
+     * missing type is therefore requested as `m3u_plus`. Everything else (other addresses, other parameters) stays unchanged.
+     */
+    fun plusUrl(url: String): String {
+        val u = url.trim()
+        val m = GET_LIST.find(u) ?: return url
+        fromUrl(u) ?: return url
+        var seen = false
+        val params = m.groupValues[2].split('&').filter { it.isNotEmpty() }.map { p ->
+            val i = p.indexOf('=')
+            val k = if (i < 0) p else p.substring(0, i)
+            if (!k.equals("type", ignoreCase = true)) p
+            else { seen = true; if (i < 0 || p.substring(i + 1).equals("m3u", ignoreCase = true)) "$k=m3u_plus" else p }
+        }
+        return m.groupValues[1] + (if (seen) params else params + "type=m3u_plus").joinToString("&") + m.groupValues[3]
+    }
+
     private fun qEnc(s: String) = URLEncoder.encode(s, "UTF-8")
 
     /** Part of a path: as usual with providers unchanged, only special characters are encoded. */
